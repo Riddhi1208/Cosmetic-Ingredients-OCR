@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Skincare Ingredient Analyzer</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>🧴 Skincare Ingredient Analyzer</h1>
+    <p>Upload a product label to analyze ingredients</p>
+
+    <input type="file" id="imageInput">
+
+    <div id ="spinner" class="spinner"></div>
+    <button onclick="analyze()">Analyze Product</button>
+    <div id="results">
+        
+        <h3>Extracted Ingredients</h3>
+        <textarea id="ingredientsBox" ></textarea>
+
+        <h3>Functions of each Ingredient</h3>
+        <div id="resultBox"></div>
+    </div>
+</div>
+
+<script>
+function analyze() {
+
+    let fileInput = document.getElementById("imageInput");
+
+    if (fileInput.files.length === 0) {
+        alert("Please select an image.");
+        return;
+    }
+    const spinner = document.getElementById("spinner");
+    spinner.style.display = "block";
+
+
+    let formData = new FormData();
+    formData.append("image", fileInput.files[0]);
+
+
+    fetch("/analyze", {
+        method: "POST",
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        spinner.style.display = "none";
+        const results = document.getElementById("results");
+        results.style.display = "block";
+        if (data.error) {
+            alert(data.error);
+            return;
+        }
+
+        // Show extracted ingredients
+        document.getElementById("ingredientsBox").value = data.ingredients;
+
+        // Build function table
+        let html = `
+            <table class="result-table">
+                <thead>
+                    <tr>
+                        <th>Ingredient</th>
+                        <th>Function</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        data.functions.forEach(item => {
+            html += `
+                <tr>
+                    <td>${item.ingredient}</td>
+                    <td>${item.function}</td>
+                </tr>
+            `;
+        });
+
+        html += `
+                </tbody>
+            </table>
+        `;
+
+        document.getElementById("resultBox").innerHTML = html;
+
+    })
+    .catch(err => {
+        spinner.style.display = "none";
+        console.error(err);
+        alert("An error occurred while analyzing the image.");
+    });
+
+}
+</script>
+
+
+
+</body>
+</html>

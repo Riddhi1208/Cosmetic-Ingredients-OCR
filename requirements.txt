@@ -1,0 +1,4 @@
+opencv-python==4.13.0.92
+pytesseract==0.3.13
+python-dotenv
+google-genai

@@ -33,6 +33,7 @@ function analyze() {
         alert("Please select an image.");
         return;
     }
+    const results = document.getElementById("results");
     const spinner = document.getElementById("spinner");
     spinner.style.display = "block";
 
@@ -48,7 +49,6 @@ function analyze() {
     .then(res => res.json())
     .then(data => {
         spinner.style.display = "none";
-        const results = document.getElementById("results");
         results.style.display = "block";
         if (data.error) {
             alert(data.error);

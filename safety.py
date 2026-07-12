@@ -1,7 +1,10 @@
 import pandas as pd
+import redis
 
-# Load CosIng database once when the application starts
 df = pd.read_csv("data/cosing.csv")
+r = redis.Redis(host='localhost', port=6379, decode_responses=True)
+
+default_exp=3600
 
 # Create lookup dictionary
 DATABASE = {
@@ -12,15 +15,21 @@ DATABASE = {
 
 def get_functions(ingredient_string):
     results = []
-
+    function=''
     ingredients = [i.strip() for i in ingredient_string.split(",")]
 
     for ingredient in ingredients:
-        function = DATABASE.get(ingredient.lower(), "Unknown")
-
+        
+        function = r.get(ingredient.lower())
+        
+        if function == None:
+            function = DATABASE.get(ingredient.lower(), "Unknown")
+            r.setex(ingredient.lower(), default_exp, function)
+        
         results.append({
             "ingredient": ingredient,
             "function": function
         })
-
+        
+        
     return results

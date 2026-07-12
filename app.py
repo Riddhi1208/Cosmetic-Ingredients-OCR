@@ -35,7 +35,6 @@ def analyze():
     try:
         #Run OCR 
         ingredients = extract_ingredients(filepath)
-
         #analysing ingredients
         functions = get_functions(ingredients)
 

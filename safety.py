@@ -3,6 +3,8 @@ import redis
 
 # Load CosIng database once when the application starts
 df = pd.read_csv("data/cosing.csv")
+
+#redis client
 r = redis.Redis(host='localhost', port=6379, decode_responses=True)
 
 default_exp=3600
